@@ -1,9 +1,18 @@
-import os 
-from dotenv import load_dotenv
-from typing import Optional
+from pydantic_settings import BaseSettings
+from functools import lru_cache
 
 
-load_dotenv()
+class Settings(BaseSettings):
+    DATABASE_URL: str
+    OPENAI_API_KEY: str | None = None
+    PROJECT_NAME: str = "CorpKnow AI"
+    
+    class Config:
+        env_file = ".env"
+        case_sensitive = True
 
+@lru_cache()
+def get_settings() -> Settings:
+    return Settings()
 
-DATABASE_URL: Optional[str] = os.getenv("DATABASE_URL")
+settings = get_settings()
