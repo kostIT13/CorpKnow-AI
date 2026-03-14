@@ -20,4 +20,5 @@ async def lifespan(app: FastAPI):
     await engine.dispose() 
     logger.info("Готово")
 
+
 app = FastAPI(title='CorpKnow AI', lifespan=lifespan)
