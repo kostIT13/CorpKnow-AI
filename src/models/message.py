@@ -19,4 +19,5 @@ class Message(Base):
     metadata_: Mapped[Optional[dict]] = mapped_column(JSONB, default=dict, nullable=True)
     is_starred: Mapped[bool] = mapped_column(Boolean, default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+    
     chat: Mapped["Chat"] = relationship("Chat", back_populates="messages")

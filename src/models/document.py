@@ -8,7 +8,7 @@ from sqlalchemy.dialects.postgresql import JSONB
 
 
 if TYPE_CHECKING:
-    from src.models.users import User
+    from src.models.user import User
 
 
 class DocumentStatus(str, enum.Enum):
