@@ -1,9 +1,14 @@
 import logging
+import os
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 from src.core.database import engine 
 from sqlalchemy import text 
+from src.core.logging_settings import setup_logging
 
+
+
+setup_logging(level=os.getenv("LOG_LEVEL", "INFO"))
 
 logger = logging.getLogger(__name__)
 
