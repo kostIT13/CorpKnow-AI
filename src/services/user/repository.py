@@ -1,4 +1,4 @@
-from src.service.user.base import UserRepository
+from src.services.user.base import UserRepository
 from src.models.user import User 
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional, List
