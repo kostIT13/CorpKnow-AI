@@ -11,7 +11,7 @@ class UserService:
         self.db = db 
         self.repository = SQLAlchemyUserRepository(db)
 
-    async def get_user(self, user_id: str) -> Optional[User]:
+    async def get_user_by_id(self, user_id: str) -> Optional[User]:
         return await self.repository.get_by_id(user_id)
 
     async def get_user_by_email(self, email: str) -> Optional[User]:
