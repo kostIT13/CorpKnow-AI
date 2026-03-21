@@ -3,7 +3,7 @@ import bcrypt
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.services.user.repository import SQLAlchemyUserRepository
 from src.models.user import User
-from typing import Optional, List, Dict, Any
+from typing import Optional, List
 
 
 class UserService:

@@ -4,7 +4,6 @@ from typing import Optional, List
 
 
 class UserRepository(ABC):
-    
     @abstractmethod
     async def get_by_id(self, user_id: str) -> Optional[User]:
         raise NotImplementedError

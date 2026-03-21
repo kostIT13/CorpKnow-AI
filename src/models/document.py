@@ -6,7 +6,6 @@ import enum
 from datetime import datetime
 from sqlalchemy.dialects.postgresql import JSONB
 
-
 if TYPE_CHECKING:
     from src.models.user import User
 

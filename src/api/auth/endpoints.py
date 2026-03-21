@@ -6,7 +6,6 @@ from src.services.auth.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["Authentication"])
 
-
 @router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
 async def register(service: UserServiceDependency, data: UserRegister):
     try:

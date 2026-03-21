@@ -4,7 +4,6 @@ from src.models.chat import Chat
 
 
 class IChatRepository(ABC):
-
     @abstractmethod
     async def get_by_id(self, chat_id: str) -> Optional[Chat]:
         raise NotImplementedError
@@ -27,7 +26,6 @@ class IChatRepository(ABC):
     
 
 class IChatService(ABC):
-
     @abstractmethod
     async def create_chat(self, user_id: str, title: str = None) -> Chat:
         raise NotImplementedError

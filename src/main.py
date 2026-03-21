@@ -8,7 +8,6 @@ from src.core.logging_settings import setup_logging
 from src.api.auth.endpoints import router as auth_router
 
 
-
 setup_logging(level=os.getenv("LOG_LEVEL", "INFO"))
 
 logger = logging.getLogger(__name__)
