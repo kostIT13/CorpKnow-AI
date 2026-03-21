@@ -10,19 +10,19 @@ router = APIRouter(prefix="/auth", tags=["Authentication"])
 @router.post("/register", response_model=Token, status_code=status.HTTP_201_CREATED)
 async def register(service: UserServiceDependency, data: UserRegister):
     try:
-        user = await service.create_user(data)
+        user = await service.create_user(data.model_dump())
     except ValueError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail=str(e)    
         )
     auth_service = AuthService(service)
-    access_token = await auth_service.create_access_token(data={"sub": user.id})
+    access_token = auth_service.create_access_token(data={"sub": user.id})
 
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/login", model_response=UserLogin)
+@router.post("/login", response_model=Token)
 async def login(service: UserServiceDependency, data: UserLogin):
     auth_service = AuthService(service)
 
@@ -34,7 +34,7 @@ async def login(service: UserServiceDependency, data: UserLogin):
             headers={"WWW-Authenticate": "Bearer"},
         )
     
-    access_token = await auth_service.create_access_token(data={"sub": user.id})
+    access_token = auth_service.create_access_token(data={"sub": user.id})
     
     return {"access_token": access_token, "token_type": "bearer"}
 
