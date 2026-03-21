@@ -22,11 +22,12 @@ class SQLAlchemyUserRepository(UserRepository):
         result = await self.session.execute(query)
         return list(result.scalars().all())
     
-    async def create(self, data: User) -> Optional[User]:
-        self.session.add(data)
+    async def create(self, data: dict) -> Optional[User]:
+        user = User(**data)
+        self.session.add(user)
         await self.session.commit()
-        await self.session.refresh(data)
-        return data
+        await self.session.refresh(user)
+        return user
 
     async def update(self, user_id: str, data: dict) -> Optional[User]:
         user = await self.get_by_id(user_id)

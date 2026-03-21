@@ -19,11 +19,6 @@ class DocumentStatus(str, enum.Enum):
 
 
 class Document(Base):
-    PENDING = "pending"      
-    PROCESSING = "processing" 
-    COMPLETED = "completed"   
-    FAILED = "failed"
-
     __tablename__ = "documents"
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, index=True)
@@ -45,4 +40,7 @@ class Document(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), onupdate=func.now())
     processed_at: Mapped[Optional[datetime]] = mapped_column(DateTime(timezone=True), nullable=True)
 
-    user: Mapped["User"] = relationship("User", back_populates="documents")
+    user: Mapped["User"] = relationship(
+        "User", 
+        back_populates="documents" 
+    )

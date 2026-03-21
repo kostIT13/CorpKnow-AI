@@ -1,14 +1,14 @@
 import uuid
+import bcrypt
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.services.user.repository import SQLAlchemyUserRepository
-from typing import Optional, List
-from src.models.user import User  
-from src.core.security import hash_password
+from src.models.user import User
+from typing import Optional, List, Dict, Any
 
 
 class UserService:
     def __init__(self, db: AsyncSession):
-        self.db = db 
+        self.db = db
         self.repository = SQLAlchemyUserRepository(db)
 
     async def get_user_by_id(self, user_id: str) -> Optional[User]:
@@ -21,12 +21,18 @@ class UserService:
     async def get_all_users(self, **filters) -> List[User]:
         return await self.repository.get_all(**filters)
 
-    async def create_user(self, data: dict) -> Optional[User]:
+    async def create_user(self, data: dict) -> User: 
+        password = data['password']
+        if len(password.encode('utf-8')) > 72:
+            raise ValueError("Пароль слишком длинный (макс. 72 байта)")
+        if len(password) < 6:
+            raise ValueError("Пароль слишком короткий (мин. 6 символов)")
+        
         existing_users = await self.repository.get_all(email=data['email'])
         if existing_users:
             raise ValueError("Email уже занят")
         
-        hashed_password = hash_password(data['password'])
+        hashed_password = self._hash_password(password)
         
         user = await self.repository.create({
             "id": str(uuid.uuid4()),
@@ -37,11 +43,30 @@ class UserService:
 
     async def update_user(self, user_id: str, data: dict) -> Optional[User]:
         if 'password' in data:
-            data['hashed_password'] = hash_password(data['password'])
+            new_password = data['password']
+            if len(new_password.encode('utf-8')) > 72:
+                raise ValueError("Пароль слишком длинный (макс. 72 байта)")
+            
+            data['hashed_password'] = self._hash_password(new_password)
             del data['password']
         
         return await self.repository.update(user_id, data)
     
     async def delete_user(self, user_id: str) -> bool:
         return await self.repository.delete(user_id)
-    
+
+    @staticmethod
+    def _hash_password(password: str) -> str:
+        salt = bcrypt.gensalt(rounds=12)
+        hashed = bcrypt.hashpw(password.encode('utf-8'), salt)
+        return hashed.decode('utf-8')
+
+    @staticmethod
+    def _verify_password(password: str, hashed_password: str) -> bool:
+        try:
+            return bcrypt.checkpw(
+                password.encode('utf-8'),
+                hashed_password.encode('utf-8')
+            )
+        except (ValueError, TypeError):
+            return False

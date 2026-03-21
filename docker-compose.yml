@@ -18,6 +18,33 @@ services:
       - ./alembic:/app/alembic
       - ./alembic.ini:/app/alembic.ini
     working_dir: /app
+    
+  backend:
+    build: .
+    container_name: my_backend
+    working_dir: /app
+    command: uvicorn src.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./src:/app/src
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
+      - ./pyproject.toml:/app/pyproject.toml
+      - ./uv.lock:/app/uv.lock
+    environment:
+      - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
+      - CHROMA_HOST=chromadb
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      chromadb:
+        condition: service_started
+    networks:
+      - app_network
+    restart: unless-stopped
 
   db:
     image: postgres:15-alpine
@@ -42,8 +69,6 @@ services:
   chromadb:
     image: chromadb/chroma:latest
     container_name: my_chroma
-    ports:
-      - "8000:8000"
     volumes:
       - chroma_data:/chroma/chroma 
     networks:

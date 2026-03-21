@@ -2,10 +2,12 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.core.database import Base
 from sqlalchemy import String, DateTime, func
 from datetime import datetime 
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, List
 
 if TYPE_CHECKING:
     from src.models.chat import Chat
+    from src.models.document import Document
+
 
 class User(Base):   
     __tablename__ = "users"
@@ -15,4 +17,10 @@ class User(Base):
     hashed_password: Mapped[str] = mapped_column(String(100), nullable=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
-    chats: Mapped[list["Chat"]] = relationship("Chat", back_populates="user", cascade="all, delete-orphan")
+    chats: Mapped[List["Chat"]] = relationship("Chat", back_populates="user", cascade="all, delete-orphan")
+    
+    documents: Mapped[List["Document"]] = relationship(
+        "Document",
+        back_populates="user",  
+        cascade="all, delete-orphan"
+    )

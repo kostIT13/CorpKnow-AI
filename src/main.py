@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from src.core.database import engine 
 from sqlalchemy import text 
 from src.core.logging_settings import setup_logging
+from src.api.auth.endpoints import router as auth_router
 
 
 
@@ -27,3 +28,5 @@ async def lifespan(app: FastAPI):
 
 
 app = FastAPI(title='CorpKnow AI', lifespan=lifespan)
+
+app.include_router(router=auth_router)
