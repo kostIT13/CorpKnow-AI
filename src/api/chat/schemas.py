@@ -25,6 +25,16 @@ class ChatMessageResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ChatListResponse(BaseModel):
+    id: str
+    title: str
+    user_id: str
+    created_at: datetime
+    updated_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+
 class ChatResponse(BaseModel):
     id: str
     title: str
@@ -32,13 +42,5 @@ class ChatResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
     messages: List[ChatMessageResponse] = []  
-    
-    model_config = ConfigDict(from_attributes=True)
-
-
-class ChatListResponse(BaseModel):
-    id: str
-    title: str
-    updated_at: datetime
     
     model_config = ConfigDict(from_attributes=True)

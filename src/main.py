@@ -30,6 +30,6 @@ async def lifespan(app: FastAPI):
 
 app = FastAPI(title='CorpKnow AI', lifespan=lifespan)
 
-app.include_router(router=auth_router)
-app.include_router(router=chat_router)
+app.include_router(router=auth_router, prefix='/api')
+app.include_router(router=chat_router, prefix='/api')
 app.include_router(router=rag_router)

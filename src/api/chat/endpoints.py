@@ -10,10 +10,10 @@ router = APIRouter(prefix='/chats', tags=["Chats"])
 
 @router.get('/', response_model=List[ChatListResponse])
 async def get_user_chats(current_user: CurrentUserDependency, service: ChatServiceDependency):
-    chats = await service.get_user_chats(current_user)
+    chats = await service.get_user_chats(current_user.id)
     return chats
 
-@router.post('/', response_model=ChatResponse, status_code=status.HTTP_201_CREATED)
+@router.post('/', response_model=ChatListResponse, status_code=status.HTTP_201_CREATED)
 async def create_chat(data: ChatCreate, current_user: CurrentUserDependency, service: ChatServiceDependency):
     chat = await service.create_chat(user_id=current_user.id, title=data.title)
     return chat 
@@ -22,7 +22,7 @@ async def create_chat(data: ChatCreate, current_user: CurrentUserDependency, ser
 async def get_chat(chat: ChatDependency):
     return chat 
 
-@router.put('/{chat_id}', response_model=ChatResponse)
+@router.patch('/{chat_id}', response_model=ChatResponse)
 async def update_chat(data: ChatUpdate, chat: ChatDependency, service: ChatServiceDependency):
     updated_chat = await service.update_chat_title(chat_id=chat.id, user_id=chat.user_id, title=data.title)
     return updated_chat
@@ -32,7 +32,7 @@ async def delete_chat(chat: ChatDependency, service: ChatServiceDependency):
     await service.delete_chat(chat_id=chat.id, user_id=chat.user_id)
     return None
 
-rag_router = APIRouter(prefix='/chats', tags=["RAG"])
+rag_router = APIRouter(prefix='/chat', tags=["RAG"])
 
 @rag_router.post("/completions", response_model=ChatMessageResponse)
 async def chat_completion(

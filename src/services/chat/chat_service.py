@@ -4,6 +4,7 @@ from typing import Optional, List
 from src.models.chat import Chat
 from uuid import uuid4
 from src.services.chat.base import IChatService
+from datetime import datetime, timezone
 
 
 class ChatService(IChatService):
@@ -21,7 +22,7 @@ class ChatService(IChatService):
         return await self.repository.get_user_chats(user_id)
     
     async def create_chat(self, user_id: str, title: str = 'Новый чат') -> Chat:
-        return await self.repository.create({"id": str(uuid4()), "user_id": user_id, "title": title})
+        return await self.repository.create({"id": str(uuid4()), "user_id": user_id, "title": title, "created_at": datetime.now(timezone.utc), "updated_at": datetime.now(timezone.utc)})
     
     async def update_chat_title(self, chat_id: str, user_id: str, title: str) -> Optional[Chat]:
         chat = await self.get_chat(chat_id, user_id)
