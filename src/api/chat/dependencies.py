@@ -1,10 +1,11 @@
 from sqlalchemy.ext.asyncio import AsyncSession
-from src.services.chat.chat_service import ChatService
+from fastapi import Depends, HTTPException, status, Path  
 from typing import Annotated
-from fastapi import Depends, HTTPException, status
-from src.core.database import get_db
-from src.models import Chat
 from src.api.auth.dependencies import CurrentUserDependency
+from src.core.database import get_db
+from src.services.chat.chat_service import ChatService
+from src.models.user import User 
+from src.models.chat import Chat
 
 
 async def get_chat_service(db: AsyncSession = Depends(get_db)) -> ChatService:
@@ -12,10 +13,11 @@ async def get_chat_service(db: AsyncSession = Depends(get_db)) -> ChatService:
 
 ChatServiceDependency = Annotated[ChatService, Depends(get_chat_service)]
 
+
 async def get_chat_or_404(
-    chat_id: str,
+    current_user: CurrentUserDependency,
     chat_service: ChatServiceDependency,
-    current_user = CurrentUserDependency
+    chat_id: str = Path(..., description="ID чата")
 ) -> Chat:
     chat = await chat_service.get_chat(chat_id, current_user.id)
     
@@ -28,5 +30,3 @@ async def get_chat_or_404(
     return chat
 
 ChatDependency = Annotated[Chat, Depends(get_chat_or_404)]
-
-

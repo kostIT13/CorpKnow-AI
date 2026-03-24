@@ -1,9 +1,10 @@
 from fastapi import APIRouter, status, HTTPException
 from src.api.auth.dependencies import CurrentUserDependency
 from src.api.chat.dependencies import ChatServiceDependency, ChatDependency
-from src.api.chat.schemas import ChatCreate, ChatListResponse, ChatMessageRequest, ChatMessageResponse, ChatResponse, ChatUpdate
+from src.api.chat.schemas import ChatCreate, ChatListResponse, ChatMessageRequest, ChatMessageResponse, ChatResponse, ChatUpdate, ChatBaseResponse
 from typing import List, Optional
 from datetime import datetime, timezone
+
 
 
 router = APIRouter(prefix='/chats', tags=["Chats"])
@@ -18,11 +19,11 @@ async def create_chat(data: ChatCreate, current_user: CurrentUserDependency, ser
     chat = await service.create_chat(user_id=current_user.id, title=data.title)
     return chat 
 
-@router.get('/{chat_id}', response_model=ChatResponse)
+@router.get('/{chat_id}', response_model=ChatBaseResponse)
 async def get_chat(chat: ChatDependency):
     return chat 
 
-@router.patch('/{chat_id}', response_model=ChatResponse)
+@router.patch('/{chat_id}', response_model=ChatBaseResponse)
 async def update_chat(data: ChatUpdate, chat: ChatDependency, service: ChatServiceDependency):
     updated_chat = await service.update_chat_title(chat_id=chat.id, user_id=chat.user_id, title=data.title)
     return updated_chat
