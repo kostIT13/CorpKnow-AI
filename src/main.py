@@ -6,6 +6,8 @@ from src.core.database import engine
 from sqlalchemy import text 
 from src.core.logging_settings import setup_logging
 from src.api.auth.endpoints import router as auth_router
+from src.api.chat.endpoints import router as chat_router
+from src.api.chat.endpoints import rag_router as rag_router
 
 
 setup_logging(level=os.getenv("LOG_LEVEL", "INFO"))
@@ -29,3 +31,5 @@ async def lifespan(app: FastAPI):
 app = FastAPI(title='CorpKnow AI', lifespan=lifespan)
 
 app.include_router(router=auth_router)
+app.include_router(router=chat_router)
+app.include_router(router=rag_router)
