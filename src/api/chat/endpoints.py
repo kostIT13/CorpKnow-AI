@@ -4,6 +4,7 @@ from src.api.chat.dependencies import ChatServiceDependency, ChatDependency
 from src.api.chat.schemas import ChatCreate, ChatListResponse, ChatMessageRequest, ChatMessageResponse, ChatResponse, ChatUpdate, ChatBaseResponse
 from typing import List, Optional
 from datetime import datetime, timezone
+from src.services.rag.dependencies import RAGServiceDependency
 
 
 
@@ -40,6 +41,7 @@ async def chat_completion(
     data: ChatMessageRequest,
     current_user: CurrentUserDependency,
     chat_service: ChatServiceDependency,
+    rag_service: RAGServiceDependency,
     chat_id: Optional[str] = None 
 ):
     if chat_id:
@@ -50,10 +52,15 @@ async def chat_completion(
                 detail="Чат не найден"
             )
 
+    result = await rag_service.generate_answer(
+        query=data.query,
+        user_id=current_user.id
+    )
+    
     return ChatMessageResponse(
         role="assistant",
-        content=f"RAG-ответ на: {data.query}\n\n(Здесь будет интеграция с LangChain + ChromaDB)",
-        sources=["document_1.pdf", "document_2.md"],
+        content=result["answer"], 
+        sources=result["sources"],
         created_at=datetime.now(timezone.utc)
     )
 
