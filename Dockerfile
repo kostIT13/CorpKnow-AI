@@ -16,6 +16,8 @@ ENV PATH="/root/.local/bin:$PATH"
 
 COPY pyproject.toml uv.lock ./
 
+ENV UV_INDEX_URL=https://pypi.tuna.tsinghua.edu.cn/simple
+
 RUN uv sync --frozen --no-dev
 
 ENV PATH="/app/.venv/bin:$PATH"

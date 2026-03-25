@@ -1,4 +1,5 @@
 services:
+  # 🔹 Миграции
   migrations:
     build: .
     container_name: my_migrations
@@ -19,6 +20,7 @@ services:
       - ./alembic.ini:/app/alembic.ini
     working_dir: /app
     
+  # 🔹 Backend (FastAPI)
   backend:
     build: .
     container_name: my_backend
@@ -27,14 +29,18 @@ services:
     ports:
       - "8000:8000"
     volumes:
-      - ./src:/app/src
-      - ./alembic:/app/alembic
+      - ./src:/app/src              
+      - ./alembic:/app/alembic    
       - ./alembic.ini:/app/alembic.ini
-      - ./pyproject.toml:/app/pyproject.toml
-      - ./uv.lock:/app/uv.lock
+      - ./uploads:/app/uploads     
     environment:
       - DATABASE_URL=postgresql+asyncpg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       - CHROMA_HOST=chromadb
+      - CHROMA_PORT=8000
+      # 🔹 ИЗМЕНЕНО: подключаемся к Ollama на хост-машине
+      - OLLAMA_HOST=http://host.docker.internal:11434
+      - OLLAMA_EMBEDDING_MODEL=nomic-embed-text
+      - OLLAMA_LLM_MODEL=llama3.2
     env_file:
       - .env
     depends_on:
@@ -45,7 +51,11 @@ services:
     networks:
       - app_network
     restart: unless-stopped
+    # 🔹 ДОБАВЛЕНО: разрешаем доступ к хосту из контейнера
+    extra_hosts:
+      - "host.docker.internal=host-gateway"
 
+  # 🔹 PostgreSQL
   db:
     image: postgres:15-alpine
     container_name: my_db
@@ -66,19 +76,27 @@ services:
       - app_network
     restart: unless-stopped
 
+  # 🔹 ChromaDB
   chromadb:
     image: chromadb/chroma:latest
     container_name: my_chroma
+    ports:
+      - "8001:8000"  
     volumes:
       - chroma_data:/chroma/chroma 
     networks:
       - app_network
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/heartbeat"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   app_network:
     driver: bridge
 
 volumes:
-  postgres_data: 
-  chroma_data:    
+  postgres_data:
+  chroma_data:

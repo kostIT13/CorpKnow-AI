@@ -6,6 +6,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str
 
     CHROMA_HOST: str = "chromadb"
+    CHROMA_PORT: str = "8000"
     CHROMA_COLLECTION: str = "corp_docs"
 
     OLLAMA_HOST: str = "http://ollama:11434"
