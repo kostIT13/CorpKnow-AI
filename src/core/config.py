@@ -8,6 +8,10 @@ class Settings(BaseSettings):
     CHROMA_HOST: str = "chromadb"
     CHROMA_COLLECTION: str = "corp_docs"
 
+    OLLAMA_HOST: str = "http://ollama:11434"
+    OLLAMA_EMBEDDING_MODEL: str = "nomic-embed-text"
+    OLLAMA_LLM_MODEL: str = "llama3.2:3b"
+
     OPENAI_API_KEY: str | None = None
     PROJECT_NAME: str = "CorpKnow AI"
 
