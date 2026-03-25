@@ -17,7 +17,7 @@ class DocumentRepository(ABC):
         raise NotImplementedError
     
     @abstractmethod
-    async def update(self, document_id: str, data_dict) -> Optional[Document]:
+    async def update(self, document_id: str, data: dict) -> Optional[Document]:
         raise NotImplementedError
     
     @abstractmethod

@@ -6,7 +6,7 @@ from sqlalchemy import select
 from datetime import datetime, timezone
 
 
-class SQLAlchemyDocumentrepository(DocumentRepository):
+class SQLAlchemyDocumentRepository(DocumentRepository):
     def __init__(self, session: AsyncSession):
         self.session = session 
 
