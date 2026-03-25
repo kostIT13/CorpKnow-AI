@@ -56,3 +56,4 @@ async def chat_completion(
         sources=["document_1.pdf", "document_2.md"],
         created_at=datetime.now(timezone.utc)
     )
+

@@ -8,6 +8,7 @@ from src.core.logging_settings import setup_logging
 from src.api.auth.endpoints import router as auth_router
 from src.api.chat.endpoints import router as chat_router
 from src.api.chat.endpoints import rag_router as rag_router
+from src.api.document.endpoints import router as document_router
 
 
 setup_logging(level=os.getenv("LOG_LEVEL", "INFO"))
@@ -32,4 +33,5 @@ app = FastAPI(title='CorpKnow AI', lifespan=lifespan)
 
 app.include_router(router=auth_router, prefix='/api')
 app.include_router(router=chat_router, prefix='/api')
-app.include_router(router=rag_router)
+app.include_router(router=rag_router, prefix='/api')
+app.include_router(document_router, prefix='/api')
