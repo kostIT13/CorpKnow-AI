@@ -1,8 +1,9 @@
-from fastapi import APIRouter, UploadFile, File, status, HTTPException
+from fastapi import APIRouter, UploadFile, File, status, HTTPException, Path
 from src.api.document.schemas import DocumentListResponse, DocumentResponse, DocumentUploadResponse
 from src.api.document.dependencies import DocumentDependency, DocumentServiceDependency
 from src.api.auth.dependencies import CurrentUserDependency
 from typing import List
+
 
 router = APIRouter(prefix='/documents', tags=["Documents"])
 
@@ -49,15 +50,16 @@ async def upload_document(
     )
 
 
-@router.get('/{doc_id}', response_model=DocumentResponse)
-async def get_document(document: DocumentDependency):
+@router.get('/{document_id}', response_model=DocumentResponse)
+async def get_document(document: DocumentDependency, document_id: str = Path(..., description="ID документа")):
     return document
 
 
-@router.delete('/{doc_id}', status_code=status.HTTP_204_NO_CONTENT)
+@router.delete('/{document_id}', status_code=status.HTTP_204_NO_CONTENT)
 async def delete_document(
     document: DocumentDependency,
-    service: DocumentServiceDependency
+    service: DocumentServiceDependency,
+    document_id: str = Path(..., description="ID документа")
 ):
     await service.delete_document(document.id, document.user_id)
     return None

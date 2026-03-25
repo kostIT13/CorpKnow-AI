@@ -1,11 +1,10 @@
 from src.core.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from fastapi import Depends
+from fastapi import Depends, Path
 from src.services.document.document_service import DocumentService
 from typing import Annotated
 from src.models.document import Document
 from fastapi import HTTPException, status
-from pathlib import Path
 from src.api.auth.dependencies import CurrentUserDependency
 
 

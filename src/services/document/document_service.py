@@ -6,12 +6,13 @@ import hashlib
 import uuid
 import os
 from pathlib import Path
+from datetime import datetime, timezone
 
 
 class DocumentService:
     def __init__(self, db: AsyncSession, upload_dir: str = 'uploads'):
         self.db = db 
-        self.repository = SQLAlchemyDocumentRepository()
+        self.repository = SQLAlchemyDocumentRepository(db)
         self.upload_dir = Path(upload_dir)
         self.upload_dir.mkdir(parents=True, exist_ok=True)
 
@@ -45,6 +46,8 @@ class DocumentService:
         ext = Path(filename).suffix or ".bin"
         file_path = self.upload_dir / f"{file_id}{ext}"
         
+        now = datetime.now(timezone.utc)
+
         with open(file_path, "wb") as f:
             f.write(file_content)
         doc = await self.repository.create({
@@ -56,7 +59,10 @@ class DocumentService:
             "file_type": file_type,
             "content_hash": content_hash,
             "status": DocumentStatus.PENDING,
-            "chunk_count": 0
+            "chunk_count": 0,
+            "created_at": now,
+            "updated_at": now
+            
         })
         
         return doc
