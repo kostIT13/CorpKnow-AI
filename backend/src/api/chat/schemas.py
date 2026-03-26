@@ -1,4 +1,3 @@
-# src/api/chat/schemas.py
 from pydantic import BaseModel, ConfigDict, Field
 from typing import Optional, List
 from datetime import datetime
@@ -14,12 +13,14 @@ class ChatUpdate(BaseModel):
 
 class ChatMessageRequest(BaseModel):
     query: str = Field(..., min_length=1, max_length=4000)
+    chat_id: Optional[str] = None
 
 
 class ChatMessageResponse(BaseModel):
     role: str 
     content: str
     sources: Optional[List[str]] = None  
+    chat_id: Optional[str] = None
     created_at: datetime
     
     model_config = ConfigDict(from_attributes=True)
@@ -31,6 +32,16 @@ class ChatListResponse(BaseModel):
     user_id: str
     created_at: datetime
     updated_at: datetime
+    
+    model_config = ConfigDict(from_attributes=True)
+
+class MessageResponse(BaseModel):
+    id: str
+    role: str
+    content: str
+    sources: List[str]
+    created_at: datetime
+    is_starred: bool
     
     model_config = ConfigDict(from_attributes=True)
 
@@ -49,6 +60,6 @@ class ChatResponse(BaseModel):
     user_id: str
     created_at: datetime
     updated_at: datetime
-    messages: List[ChatMessageResponse] = []  
+    messages: List[MessageResponse] = []  
     
     model_config = ConfigDict(from_attributes=True)

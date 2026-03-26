@@ -5,6 +5,8 @@ from src.models.chat import Chat
 from uuid import uuid4
 from src.services.chat.base import IChatService
 from datetime import datetime, timezone
+from sqlalchemy import select
+from src.models.message import Message
 
 
 class ChatService(IChatService):
@@ -37,3 +39,31 @@ class ChatService(IChatService):
             return False
         
         return await self.repository.delete(chat_id)
+
+    async def add_message(
+        self,
+        chat_id: str,
+        role: str,
+        content: str,
+        metadata_: Optional[dict] = None
+    ) -> Message:
+        message = Message(
+            id=str(uuid4()),
+            chat_id=chat_id,
+            role=role,
+            content=content,
+            metadata_=metadata_ or {},
+            is_starred=False
+        )
+        self.db.add(message)
+        await self.db.commit()
+        await self.db.refresh(message)
+        return message
+    
+    async def get_chat_messages(self, chat_id: str) -> List[Message]:
+        result = await self.db.execute(
+            select(Message)
+            .where(Message.chat_id == chat_id)
+            .order_by(Message.created_at.asc())
+        )
+        return list(result.scalars().all())
