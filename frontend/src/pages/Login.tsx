@@ -1,50 +1,40 @@
 // src/pages/Login.tsx
-import { useState} from 'react';
-import type { FormEvent} from 'react';
+import { useState } from 'react';
+import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { authApi } from '../api/auth';
-import toast from 'react-hot-toast';
+import { useAuth } from '../hooks';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      // 🔹 Отправляем запрос на логин
-      const tokens = await authApi.login({ email, password });
-      
-      // 🔹 Сохраняем токен
-      localStorage.setItem('token', tokens.access_token);
-      
-      toast.success('✅ Успешный вход!');
-      
-      // 🔹 Редирект на главную
-      navigate('/');
+      await login({ email, password });
+      navigate('/dashboard', { replace: true });
     } catch (error: any) {
-      // 🔹 Показываем ошибку
-      const message = error.response?.data?.detail || 'Ошибка при входе';
-      toast.error(typeof message === 'string' ? message : 'Неверный email или пароль');
+      // Ошибка уже обработана в useAuth
     } finally {
       setLoading(false);
-    }
-  };
+    }  // ✅ Закрывает try-catch-finally
+  };  // ✅ Закрывает функцию handleSubmit
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
-        {/* 🔹 Заголовок */}
+        {/* Заголовок */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">CorpKnow AI</h1>
           <p className="mt-2 text-gray-600">Войдите в свой аккаунт</p>
         </div>
 
-        {/* 🔹 Форма */}
+        {/* Форма */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
           {/* Email */}
           <div>
@@ -97,6 +87,19 @@ export default function Login() {
             )}
           </button>
         </form>
+
+        {/* Ссылка на регистрацию */}
+        <div className="text-center mt-4">
+          <p className="text-sm text-gray-600">
+            Нет аккаунта?{' '}
+            <button
+              onClick={() => navigate('/register')}
+              className="font-medium text-blue-600 hover:text-blue-500"
+            >
+              Зарегистрироваться
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );

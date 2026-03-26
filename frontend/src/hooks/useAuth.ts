@@ -1,7 +1,7 @@
 // src/hooks/useAuth.ts
 import { useState, useEffect, useCallback } from 'react';
 import { authApi } from '../api/auth';
-import type { User, LoginRequest } from '../types';
+import type { User, LoginRequest, AuthTokens } from '../types';
 import toast from 'react-hot-toast';
 
 interface UseAuthReturn {
@@ -17,11 +17,6 @@ export function useAuth(): UseAuthReturn {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
-  // 🔹 Проверка авторизации при загрузке
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
   const checkAuth = useCallback(async () => {
     const token = localStorage.getItem('token');
     if (!token) {
@@ -34,7 +29,6 @@ export function useAuth(): UseAuthReturn {
       const userData = await authApi.me();
       setUser(userData);
     } catch (error) {
-      // Токен невалиден
       localStorage.removeItem('token');
       setUser(null);
     } finally {
@@ -42,11 +36,14 @@ export function useAuth(): UseAuthReturn {
     }
   }, []);
 
-  // 🔹 Логин
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
+
   const login = async (data: LoginRequest) => {
     setLoading(true);
     try {
-      const tokens = await authApi.login(data);
+      const tokens: AuthTokens = await authApi.login(data);
       localStorage.setItem('token', tokens.access_token);
       
       const userData = await authApi.me();
@@ -62,7 +59,6 @@ export function useAuth(): UseAuthReturn {
     }
   };
 
-  // 🔹 Логаут
   const logout = useCallback(() => {
     localStorage.removeItem('token');
     setUser(null);
