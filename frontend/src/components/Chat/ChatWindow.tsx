@@ -1,66 +1,56 @@
 // src/components/Chat/ChatWindow.tsx
-import { useState, useRef, useEffect } from 'react';
-import { chatApi } from '../../api/chat';
-import  MessageBubble  from './MessageBubble';
-import  ChatInput  from './ChatInput';
-import  SourceCard  from './SourceCard';
-import type { Message, ChatResponse } from '../../types';
-import toast from 'react-hot-toast';
+import { useRef, useEffect } from 'react';
+import MessageBubble from './MessageBubble';
+import ChatInput from './ChatInput';
+import SourceCard from './SourceCard';
+import {useChat} from '../../hooks'; 
+import type { Message } from '../../types';
 
 export default function ChatWindow() {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [sources, setSources] = useState<string[]>([]);
+  const {
+    messages,
+    sending,
+    sendMessage,
+    createNewChat,
+  } = useChat();
+  
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // 🔹 Авто-скролл вниз при новом сообщении
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, loading]);
+  }, [messages, sending]);
 
   const handleSend = async (query: string) => {
-    // 🔹 Добавляем сообщение пользователя
-    const userMsg: Message = { role: 'user', content: query };
-    setMessages(prev => [...prev, userMsg]);
-    setLoading(true);
-    setSources([]);
+    await sendMessage(query);
+  };
 
-    try {
-      // 🔹 Запрос к RAG API
-      const response: ChatResponse = await chatApi.completion({ query });
-      
-      // 🔹 Добавляем ответ ассистента
-      const assistantMsg: Message = {
-        role: 'assistant',
-        content: response.content,
-        sources: response.sources,
-        created_at: response.created_at,
-      };
-      setMessages(prev => [...prev, assistantMsg]);
-      setSources(response.sources || []);
-      
-    } catch (error: any) {
-      const message = error.response?.data?.detail || 'Ошибка при получении ответа';
-      toast.error(typeof message === 'string' ? message : 'Не удалось получить ответ');
-      
-      // 🔹 Добавляем сообщение об ошибке
-      setMessages(prev => [...prev, {
-        role: 'assistant',
-        content: '❌ Произошла ошибка. Попробуйте позже.',
-      }]);
-    } finally {
-      setLoading(false);
-    }
+  const handleNewChat = async () => {
+    await createNewChat();
   };
 
   return (
     <div className="flex flex-col h-full max-w-4xl mx-auto">
       {/* Заголовок */}
       <div className="border-b border-gray-200 pb-4 mb-4">
-        <h2 className="text-xl font-semibold text-gray-900">💬 Чат с документами</h2>
-        <p className="text-sm text-gray-500 mt-1">
-          Задавайте вопросы по загруженным документам
-        </p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h2 className="text-xl font-semibold text-gray-900">💬 Чат с документами</h2>
+            <p className="text-sm text-gray-500 mt-1">
+              Задавайте вопросы по загруженным документам
+            </p>
+          </div>
+          
+          <button
+            onClick={handleNewChat}
+            className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition flex items-center gap-2 text-sm font-medium"
+          >
+            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Новый чат
+          </button>
+        </div>
       </div>
 
       {/* Сообщения */}
@@ -90,12 +80,12 @@ export default function ChatWindow() {
         ) : (
           /* Список сообщений */
           <>
-            {messages.map((msg, i) => (
-              <MessageBubble key={i} message={msg} />
+            {messages.map((msg: Message, i: number) => (  // ✅ Явные типы!
+              <MessageBubble key={msg.id || i} message={msg} />
             ))}
             
             {/* Индикатор загрузки */}
-            {loading && (
+            {sending && (
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
                   <span className="text-white text-sm">🤖</span>
@@ -115,12 +105,12 @@ export default function ChatWindow() {
         )}
       </div>
 
-      {/* Источники */}
-      {sources.length > 0 && (
+      {/* Источники последнего сообщения */}
+      {messages.length > 0 && messages[messages.length - 1].sources && messages[messages.length - 1].sources!.length > 0 && (
         <div className="border-t border-gray-200 pt-4 mb-4">
           <p className="text-sm text-gray-500 mb-2">📚 Источники:</p>
           <div className="flex flex-wrap gap-2">
-            {sources.map((src, i) => (
+            {messages[messages.length - 1].sources!.map((src: string, i: number) => (  // ✅ Тип для src
               <SourceCard key={i} filename={src} />
             ))}
           </div>
@@ -128,7 +118,7 @@ export default function ChatWindow() {
       )}
 
       {/* Поле ввода */}
-      <ChatInput onSend={handleSend} disabled={loading} />
+      <ChatInput onSend={handleSend} disabled={sending} />
     </div>
   );
 }

@@ -39,7 +39,7 @@ class MessageResponse(BaseModel):
     id: str
     role: str
     content: str
-    sources: List[str]
+    sources: Optional[List[str]] = []
     created_at: datetime
     is_starred: bool
     
