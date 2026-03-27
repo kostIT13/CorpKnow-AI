@@ -1,121 +1,125 @@
 # 🤖 CorpKnow AI
-**Smart Corporate Knowledge Assistant with RAG Technology (Retrieval-Augmented Generation)** 
+**Умный корпоративный ассистент знаний с технологией RAG (Retrieval-Augmented Generation)** 
 
-Upload documents and get precise answers to questions based on their content.
+Загружайте документы и получайте точные ответы на вопросы на основе их содержания.
 
-## ✨ Features
+## ✨ Возможности
 
-* 📤 Document Upload — Support for PDF, TXT, DOCX files up to 10 MB
-* 🔍 Smart Search — Vector search across all user documents via ChromaDB
-* 💬 Context-Aware Chat — Conversational interface with message history and answer sources
-* 👤 Authentication — Registration, login, route protection via JWT
-* 🗂️ Document Management — View processing status, delete files, chunk statistics
-* 🔄 Async Processing — Background document indexing without blocking the UI
-* 🎨 Responsive UI — Modern interface built with React + Tailwind CSS
+* 📤 Загрузка документов — Поддержка PDF, TXT, DOCX файлов до 10 МБ
+* 🔍 Умный поиск — Векторный поиск по всем документам пользователя через ChromaDB
+* 💬 Чат с контекстом — Диалог с историей сообщений и источниками ответов
+* 👤 Авторизация — Регистрация, вход, защита маршрутов через JWT
+* 🗂️ Управление документами — Просмотр статуса обработки, удаление, статистика чанков
+* 🔄 Асинхронная обработка — Фоновая индексация документов без блокировки UI
+* 🎨 Адаптивный UI — Современный интерфейс на React + Tailwind CSS
 
-## 🛠 Tech Stack
+## 🛠 Технологический стек
 
 **Frontend:**
 * React 18 + TypeScript
-* Vite 
+* Vite (сборка и dev-сервер)
 * Tailwind CSS + Headless UI
-* React Router DOM 
-* Axios 
-* React Hot Toast 
-* React Dropzone 
+* React Router DOM (навигация)
+* Axios (HTTP-клиент)
+* React Hot Toast (уведомления)
+* React Dropzone (загрузка файлов)
 
 **Backend:**
 * Python 3.12 + FastAPI
-* SQLAlchemy + Alembic
-* PostgreSQL 
-* ChromaDB 
-* Pydantic 
-* Uvicorn 
+* SQLAlchemy + Alembic (ORM + миграции)
+* PostgreSQL (основная БД)
+* ChromaDB (векторное хранилище)
+* Pydantic (валидация данных)
+* Uvicorn (ASGI-сервер)
 
 **AI / ML:**
-* Ollama (local LLMs)
-* Model: llama3.2:3b (answer generation)
-* Embeddings: nomic-embed-text
+* Ollama (локальные LLM)
+* Модель: llama3.2:3b (генерация ответов)
+* Эмбеддинги: nomic-embed-text
 
-**Infrastructure:**
+**Инфраструктура:**
 * Docker + Docker Compose
-* Nginx (static file serving in production)
+* Nginx (раздача статики в продакшене)
 
 
-## 🚀 Quick Start
+## 🚀 Быстрый старт
 
-**Requirements**
+**Требования**
 * Docker 24.0+
 * Docker Compose 2.20+
-* Ollama 0.1.30+ (local)
-* RAM: 8 GB minimum (16 GB recommended for LLM)
+* Ollama 0.1.30+ (локально)
+* ОЗУ 8 ГБ (рекомендуется 16 ГБ для LLM)
 
-### Step 1: Clone the Repository
+### Шаг 1: Клонируйте репозиторий
 ```bash
 git clone https://github.com/kostIT13/CorpKnow-AI.git
 cd CorpKnow-AI
 ```
 
-### Step 2: Configure Environment
+### Шаг 2: Настройте окружение
 ```bash
 cp .env.example .env
 ```
 
-### Step 3: Start Ollama (Local)
+### Шаг 3: Запустите Ollama (локально)
 ```bash
-
+# Скачайте необходимые модели
 ollama pull llama3.2:3b
 ollama pull nomic-embed-text
 
+# Запустите Ollama
 OLLAMA_HOST=0.0.0.0 ollama serve
 ```
 
-### Step 4: Start the Project
+### Шаг 4: Запустите проект
 ```bash
+# Сборка и запуск всех сервисов
 docker compose up --build
 
+# Или в фоновом режиме
 docker compose up -d --build
 
+# Просмотр логов
 docker compose logs -f
 ```
 
-### Step 5: Open the Application
+### Шаг 5: Откройте приложение
 * Frontend: http://localhost:5173
 * Backend API: http://localhost:8000
 * API Docs (Swagger): http://localhost:8000/docs
 
-## 📁 Project Structure
+## 📁 Структура проекта
 ```
 CorpKnow-AI/
 ├── backend/
 │   ├── src/
 │   │   ├── api/              # API endpoints
-│   │   ├── core/             # Config, security, logging
-│   │   ├── models/           # SQLAlchemy models
-│   │   ├── services/         # Business logic
-│   │   │   ├── rag/          # RAG service
-│   │   │   ├── chat/         # Chat management
-│   │   │   └── document/     # Document processing
-│   │   └── main.py           # FastAPI entry point
-│   ├── alembic/              # Database migrations
+│   │   ├── core/             # Конфигурация, безопасность
+│   │   ├── models/           # SQLAlchemy модели
+│   │   ├── services/         # Бизнес-логика
+│   │   │   ├── rag/          # RAG-сервис
+│   │   │   ├── chat/         # Управление чатами
+│   │   │   └── document/     # Обработка документов
+│   │   └── main.py           # Точка входа FastAPI
+│   ├── alembic/              # Миграции БД
 │   ├── requirements.txt
 │   └── Dockerfile
 │
 ├── frontend/
 │   ├── src/
-│   │   ├── api/              # API clients
-│   │   ├── components/       # UI components
-│   │   ├── hooks/            # Custom hooks
-│   │   ├── pages/            # Pages
-│   │   ├── types/            # TypeScript types
-│   │   ├── App.tsx           # Routing
-│   │   └── main.tsx          # React entry point
+│   │   ├── api/              # API-клиенты
+│   │   ├── components/       # UI-компоненты
+│   │   ├── hooks/            # Кастомные хуки
+│   │   ├── pages/            # Страницы
+│   │   ├── types/            # TypeScript типы
+│   │   ├── App.tsx           # Роутинг
+│   │   └── main.tsx          # Точка входа React
 │   ├── package.json
 │   ├── vite.config.ts
 │   ├── Dockerfile
 │   └── nginx.conf
 │
-├── uploads/                  # Uploaded files (volume)
+├── uploads/                  # Загруженные файлы
 ├── docker-compose.yml
 ├── .env.example
 └── README.md
