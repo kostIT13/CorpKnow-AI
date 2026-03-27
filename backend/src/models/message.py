@@ -1,7 +1,8 @@
+# src/models/message.py
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.core.database import Base  
 from sqlalchemy import String, ForeignKey, Text, Boolean, func, DateTime
-from typing import Optional, TYPE_CHECKING
+from typing import Optional, TYPE_CHECKING, List
 from sqlalchemy.dialects.postgresql import JSONB
 from datetime import datetime
 
@@ -21,3 +22,22 @@ class Message(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
     
     chat: Mapped["Chat"] = relationship("Chat", back_populates="messages")
+
+    # 🔹 Property для извлечения источников из metadata_
+    @property
+    def sources(self) -> List[str]:
+        """Извлекает список источников из поля metadata_"""
+        if not self.metadata_:
+            return []
+        sources = self.metadata_.get("sources")
+        if isinstance(sources, list):
+            return sources
+        return []
+
+    # 🔹 Setter для удобного сохранения источников
+    @sources.setter
+    def sources(self, value: List[str]):
+        """Сохраняет список источников в поле metadata_"""
+        if self.metadata_ is None:
+            self.metadata_ = {}
+        self.metadata_["sources"] = value

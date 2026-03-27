@@ -26,7 +26,7 @@ export default function Osnov() {
           onClick={() => navigate('/register')}
           className="px-8 py-4 bg-blue-600 text-white rounded-xl font-semibold"
         >
-          Начать бесплатно
+          Начать
         </button>
       </main>
     </div>

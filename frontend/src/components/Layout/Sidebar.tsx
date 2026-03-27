@@ -2,7 +2,7 @@
 import { NavLink } from 'react-router-dom';
 
 const navigation = [
-  { name: 'Чат', href: '/', icon: '💬' },
+  { name: 'Чат', href: '/chat', icon: '💬' },  // ✅ ИСПРАВЛЕНО: '/chat' вместо '/'
   { name: 'Документы', href: '/documents', icon: '📁' },
 ];
 

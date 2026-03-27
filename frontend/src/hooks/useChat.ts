@@ -1,3 +1,4 @@
+// src/hooks/useChat.ts
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { chatApi } from '../api/chat';
 import type { Message, ChatSession, ChatHistory } from '../types';
@@ -26,7 +27,6 @@ export function useChat(): UseChatReturn {
   
   const initialized = useRef(false);
 
-  // 🔹 Загрузка чатов при монтировании
   useEffect(() => {
     if (!initialized.current) {
       loadChats();
@@ -34,64 +34,78 @@ export function useChat(): UseChatReturn {
     }
   }, []);
 
-  // 🔹 Загрузка списка чатов
   const loadChats = useCallback(async () => {
     try {
       const chatList = await chatApi.listChats();
       setChats(chatList);
       
-      // Если есть чаты, загружаем последний
+      // 🔹 Безопасная загрузка первого чата
       if (chatList.length > 0 && !currentChatId) {
-        await selectChat(chatList[0].chat_id);
+        const firstChatId = chatList[0].chat_id || chatList[0].id;
+        if (firstChatId) {
+          await selectChat(firstChatId);
+        }
       }
-    } catch (error) {
+    } catch (error: any) {
+      console.error('❌ Ошибка загрузки чатов:', error);
       toast.error('Не удалось загрузить чаты');
     } finally {
       setLoading(false);
     }
   }, [currentChatId]);
 
-  // 🔹 Выбор чата
   const selectChat = useCallback(async (chatId: string) => {
     setSending(true);
     try {
       const history: ChatHistory = await chatApi.getHistory(chatId);
       setCurrentChatId(chatId);
       
-      // Конвертируем историю в сообщения
       setMessages(history.messages.map(msg => ({
         id: msg.id,
         role: msg.role as 'user' | 'assistant',
         content: msg.content,
-        sources: msg.sources,
+        sources: msg.sources || [],  // ✅ Гарантируем массив
         created_at: msg.created_at,
         is_starred: msg.is_starred,
       })));
-    } catch (error) {
+    } catch (error: any) {
+      console.error('❌ Ошибка загрузки истории:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        chatId,
+      });
+      
+      // 🔹 Если чат не найден — просто очищаем сообщения
+      if (error.response?.status === 404) {
+        setMessages([]);
+        setCurrentChatId(chatId);
+        return;
+      }
+      
       toast.error('Не удалось загрузить историю чата');
     } finally {
       setSending(false);
     }
   }, []);
 
-  // 🔹 Создание нового чата
   const createNewChat = useCallback(async () => {
     try {
       const newChat = await chatApi.createChat();
       setChats(prev => [newChat, ...prev]);
-      setCurrentChatId(newChat.chat_id);
+      const chatId = newChat.chat_id || newChat.id || '';
+      setCurrentChatId(chatId);  // ✅ Гарантируем string
       setMessages([]);
       toast.success('Новый чат создан');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('❌ Ошибка создания чата:', error);
       toast.error('Не удалось создать чат');
     }
   }, []);
 
-  // 🔹 Отправка сообщения
   const sendMessage = useCallback(async (query: string) => {
     if (!query.trim()) return;
 
-    // 🔹 Добавляем сообщение пользователя
     const userMsg: Message = {
       id: Date.now().toString(),
       role: 'user',
@@ -102,25 +116,21 @@ export function useChat(): UseChatReturn {
     setSending(true);
 
     try {
-      // 🔹 Запрос к API
       const response = await chatApi.completion({
         query,
         chat_id: currentChatId || undefined,
       });
 
-      // 🔹 Если это первое сообщение, обновляем currentChatId
       if (!currentChatId && response.chat_id) {
         setCurrentChatId(response.chat_id);
-        // Обновляем список чатов
         await loadChats();
       }
 
-      // 🔹 Добавляем ответ ассистента
       const assistantMsg: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content: response.content,
-        sources: response.sources,
+        sources: response.sources || [],
         created_at: response.created_at,
       };
       setMessages(prev => [...prev, assistantMsg]);
@@ -129,7 +139,6 @@ export function useChat(): UseChatReturn {
       const message = error.response?.data?.detail || 'Ошибка при получении ответа';
       toast.error(typeof message === 'string' ? message : 'Не удалось получить ответ');
       
-      // 🔹 Добавляем сообщение об ошибке
       setMessages(prev => [...prev, {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -141,13 +150,12 @@ export function useChat(): UseChatReturn {
     }
   }, [currentChatId, loadChats]);
 
-  // 🔹 Удаление чата
   const deleteChat = useCallback(async (chatId: string) => {
     if (!confirm('Удалить этот чат?')) return;
     
     try {
       await chatApi.deleteChat(chatId);
-      setChats(prev => prev.filter(c => c.chat_id !== chatId));
+      setChats(prev => prev.filter(c => (c.chat_id || c.id) !== chatId));
       
       if (currentChatId === chatId) {
         setCurrentChatId(null);
@@ -155,12 +163,12 @@ export function useChat(): UseChatReturn {
       }
       
       toast.success('Чат удалён');
-    } catch (error) {
+    } catch (error: any) {
+      console.error('❌ Ошибка удаления чата:', error);
       toast.error('Ошибка при удалении чата');
     }
   }, [currentChatId]);
 
-  // 🔹 Очистка сообщений
   const clearMessages = useCallback(() => {
     setMessages([]);
   }, []);

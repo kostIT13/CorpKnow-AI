@@ -99,42 +99,60 @@ class RAGService:
             return False
     
     async def search(
-        self,
-        query: str,
-        user_id: str,
-        top_k: int = 5
+    self,
+    query: str,
+    user_id: str,
+    top_k: int = 20  # 🔹 Увеличили с 5 до 20
     ) -> List[dict]:
-        
+    
         try:
+            logger.info(f"🔍 ПОИСК: запрос='{query[:50]}...', user_id={user_id}, top_k={top_k}")
+        
             query_embedding = self.embeddings.embed_text(query)
-            
             collection = self.chroma.get_or_create_collection(user_id)
-            
+        
+        # 🔹 Берём больше кандидатов для разнообразия
             results = collection.query(
-                query_embeddings=[query_embedding],
-                n_results=top_k,
+            query_embeddings=[query_embedding],
+                n_results=top_k * 2,  # 🔹 40 кандидатов
                 include=["documents", "metadatas", "distances"]
             )
-            
-            relevant_chunks = []
+        
+        # 🔹 Дедупликация: не более 3 чанков из одного документа
+            seen_docs = {}
+            deduplicated = []
+        
             if results.get("documents") and results["documents"][0]:
                 for i, doc_content in enumerate(results["documents"][0]):
                     metadata = results["metadatas"][0][i] if results.get("metadatas") else {}
                     distance = results["distances"][0][i] if results.get("distances") else None
-                    
-                    relevant_chunks.append({
-                        "content": doc_content,
-                        "metadata": metadata,
-                        "score": 1 - distance if distance is not None else 0.0 
-                    })
-            
-            logger.info(f"Найдено {len(relevant_chunks)} релевантных чанков для запроса: {query[:50]}...")
-            return relevant_chunks
+                    filename = metadata.get("filename", "Unknown")
+                
+                # 🔹 Ограничиваем чанки из одного файла
+                    doc_count = seen_docs.get(filename, 0)
+                    if doc_count < 3:  # 🔹 Макс 3 чанка из одного документа
+                        seen_docs[filename] = doc_count + 1
+                        deduplicated.append({
+                            "content": doc_content,
+                            "metadata": metadata,
+                            "score": 1 - distance if distance is not None else 0.0
+                        })
+                
+                # 🔹 Хватает top_k
+                    if len(deduplicated) >= top_k:
+                        break
+        
+        # 🔹 Логирование результатов
+            filenames = [c["metadata"].get("filename") for c in deduplicated if c["metadata"].get("filename")]
+            unique_files = list(set(filenames))
+            logger.info(f"📚 ПОИСК: '{query[:30]}...' → чанки из: {unique_files} (всего {len(deduplicated)})")
+        
+            return deduplicated
             
         except Exception as e:
-            logger.error(f"Ошибка поиска по запросу '{query}': {e}", exc_info=True)
+            logger.error(f"❌ Ошибка поиска: {type(e).__name__}: {e}", exc_info=True)
             return []
-    
+        
     async def generate_answer(
         self,
         query: str,
@@ -142,7 +160,7 @@ class RAGService:
         chat_history: Optional[List[dict]] = None
     ) -> dict:
         
-        relevant_chunks = await self.search(query, user_id, top_k=5)
+        relevant_chunks = await self.search(query, user_id, top_k=20)
         
         if not relevant_chunks:
             logger.info(f"Не найдено релевантных чанков для запроса: {query}")
