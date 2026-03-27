@@ -1,4 +1,3 @@
-// src/hooks/useChat.ts
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { chatApi } from '../api/chat';
 import type { Message, ChatSession, ChatHistory } from '../types';
@@ -39,7 +38,6 @@ export function useChat(): UseChatReturn {
       const chatList = await chatApi.listChats();
       setChats(chatList);
       
-      // 🔹 Безопасная загрузка первого чата
       if (chatList.length > 0 && !currentChatId) {
         const firstChatId = chatList[0].chat_id || chatList[0].id;
         if (firstChatId) {
@@ -47,7 +45,7 @@ export function useChat(): UseChatReturn {
         }
       }
     } catch (error: any) {
-      console.error('❌ Ошибка загрузки чатов:', error);
+      console.error('Ошибка загрузки чатов:', error);
       toast.error('Не удалось загрузить чаты');
     } finally {
       setLoading(false);
@@ -64,19 +62,18 @@ export function useChat(): UseChatReturn {
         id: msg.id,
         role: msg.role as 'user' | 'assistant',
         content: msg.content,
-        sources: msg.sources || [],  // ✅ Гарантируем массив
+        sources: msg.sources || [], 
         created_at: msg.created_at,
         is_starred: msg.is_starred,
       })));
     } catch (error: any) {
-      console.error('❌ Ошибка загрузки истории:', {
+      console.error('Ошибка загрузки истории:', {
         message: error.message,
         status: error.response?.status,
         data: error.response?.data,
         chatId,
       });
       
-      // 🔹 Если чат не найден — просто очищаем сообщения
       if (error.response?.status === 404) {
         setMessages([]);
         setCurrentChatId(chatId);
@@ -94,11 +91,11 @@ export function useChat(): UseChatReturn {
       const newChat = await chatApi.createChat();
       setChats(prev => [newChat, ...prev]);
       const chatId = newChat.chat_id || newChat.id || '';
-      setCurrentChatId(chatId);  // ✅ Гарантируем string
+      setCurrentChatId(chatId);  
       setMessages([]);
       toast.success('Новый чат создан');
     } catch (error: any) {
-      console.error('❌ Ошибка создания чата:', error);
+      console.error('Ошибка создания чата:', error);
       toast.error('Не удалось создать чат');
     }
   }, []);
@@ -164,7 +161,7 @@ export function useChat(): UseChatReturn {
       
       toast.success('Чат удалён');
     } catch (error: any) {
-      console.error('❌ Ошибка удаления чата:', error);
+      console.error('Ошибка удаления чата:', error);
       toast.error('Ошибка при удалении чата');
     }
   }, [currentChatId]);

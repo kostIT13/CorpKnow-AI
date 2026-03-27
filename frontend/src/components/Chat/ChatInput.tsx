@@ -19,7 +19,6 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   return (
     <form onSubmit={handleSubmit} className="flex gap-3">
-      {/* Поле ввода */}
       <div className="flex-1 relative">
         <input
           type="text"
@@ -31,7 +30,6 @@ export default function ChatInput({ onSend, disabled }: ChatInputProps) {
         />
       </div>
       
-      {/* Кнопка отправки */}
       <button
         type="submit"
         disabled={!input.trim() || disabled}

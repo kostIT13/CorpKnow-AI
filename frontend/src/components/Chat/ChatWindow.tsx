@@ -1,4 +1,3 @@
-// src/components/Chat/ChatWindow.tsx
 import { useRef, useEffect } from 'react';
 import MessageBubble from './MessageBubble';
 import ChatInput from './ChatInput';
@@ -16,7 +15,6 @@ export default function ChatWindow() {
   
   const scrollRef = useRef<HTMLDivElement>(null);
 
-  // 🔹 Авто-скролл вниз при новом сообщении
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, sending]);
@@ -31,7 +29,6 @@ export default function ChatWindow() {
 
   return (
     <div className="flex flex-col h-full max-w-4xl mx-auto">
-      {/* Заголовок */}
       <div className="border-b border-gray-200 pb-4 mb-4">
         <div className="flex items-center justify-between">
           <div>
@@ -53,10 +50,8 @@ export default function ChatWindow() {
         </div>
       </div>
 
-      {/* Сообщения */}
       <div className="flex-1 overflow-y-auto space-y-4 mb-4">
         {messages.length === 0 ? (
-          /* Пустое состояние */
           <div className="text-center py-12">
             <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
               <span className="text-3xl">🤖</span>
@@ -78,13 +73,11 @@ export default function ChatWindow() {
             </div>
           </div>
         ) : (
-          /* Список сообщений */
           <>
-            {messages.map((msg: Message, i: number) => (  // ✅ Явные типы!
+            {messages.map((msg: Message, i: number) => (  
               <MessageBubble key={msg.id || i} message={msg} />
             ))}
             
-            {/* Индикатор загрузки */}
             {sending && (
               <div className="flex gap-3">
                 <div className="w-8 h-8 rounded-full bg-green-600 flex items-center justify-center">
@@ -105,19 +98,17 @@ export default function ChatWindow() {
         )}
       </div>
 
-      {/* Источники последнего сообщения */}
       {messages.length > 0 && messages[messages.length - 1].sources && messages[messages.length - 1].sources!.length > 0 && (
         <div className="border-t border-gray-200 pt-4 mb-4">
           <p className="text-sm text-gray-500 mb-2">📚 Источники:</p>
           <div className="flex flex-wrap gap-2">
-            {messages[messages.length - 1].sources!.map((src: string, i: number) => (  // ✅ Тип для src
+            {messages[messages.length - 1].sources!.map((src: string, i: number) => (
               <SourceCard key={i} filename={src} />
             ))}
           </div>
         </div>
       )}
 
-      {/* Поле ввода */}
       <ChatInput onSend={handleSend} disabled={sending} />
     </div>
   );

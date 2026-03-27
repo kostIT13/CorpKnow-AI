@@ -1,4 +1,3 @@
-// src/hooks/useDocuments.ts
 import { useState, useCallback, useEffect } from 'react';
 import { documentsApi } from '../api/documents';
 import type { Document } from '../types';
@@ -18,12 +17,10 @@ export function useDocuments(): UseDocumentsReturn {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
 
-  // 🔹 Загрузка документов при монтировании
   useEffect(() => {
     loadDocuments();
   }, []);
 
-  // 🔹 Загрузка списка документов
   const loadDocuments = useCallback(async () => {
     setLoading(true);
     try {
@@ -36,9 +33,7 @@ export function useDocuments(): UseDocumentsReturn {
     }
   }, []);
 
-  // 🔹 Загрузка файла
   const uploadDocument = useCallback(async (file: File) => {
-    // 🔹 Валидация типа
     const allowedTypes = [
       'application/pdf',
       'text/plain',
@@ -50,7 +45,6 @@ export function useDocuments(): UseDocumentsReturn {
       throw new Error('Неподдерживаемый тип файла');
     }
 
-    // 🔹 Валидация размера (10 МБ)
     if (file.size > 10 * 1024 * 1024) {
       toast.error('Максимальный размер файла — 10 МБ');
       throw new Error('Файл слишком большой');
@@ -61,9 +55,8 @@ export function useDocuments(): UseDocumentsReturn {
 
     try {
       await documentsApi.upload(file);
-      toast.success(`✅ ${file.name} загружен!`, { id: toastId });
+      toast.success(`${file.name} загружен!`, { id: toastId });
       
-      // 🔹 Обновляем список
       await loadDocuments();
     } catch (error: any) {
       const message = error.response?.data?.detail || 'Ошибка при загрузке';
@@ -74,7 +67,6 @@ export function useDocuments(): UseDocumentsReturn {
     }
   }, [loadDocuments]);
 
-  // 🔹 Удаление документа
   const deleteDocument = useCallback(async (id: string) => {
     if (!confirm('Удалить этот документ?')) return;
     

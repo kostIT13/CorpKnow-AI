@@ -1,4 +1,3 @@
-// src/components/Chat/MessageBubble.tsx
 import type { Message } from '../../types';
 
 interface MessageBubbleProps {
@@ -10,7 +9,6 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
 
   return (
     <div className={`flex gap-3 ${isUser ? 'flex-row-reverse' : 'flex-row'}`}>
-      {/* Аватар */}
       <div
         className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
           isUser ? 'bg-blue-600' : 'bg-green-600'
@@ -21,7 +19,6 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
         </span>
       </div>
 
-      {/* Сообщение */}
       <div
         className={`max-w-[75%] rounded-2xl px-4 py-3 ${
           isUser
@@ -31,7 +28,6 @@ export default function MessageBubble({ message }: MessageBubbleProps) {
       >
         <p className="text-sm whitespace-pre-wrap">{message.content}</p>
         
-        {/* Время */}
         {message.created_at && (
           <p
             className={`text-xs mt-2 ${

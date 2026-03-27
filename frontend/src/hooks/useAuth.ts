@@ -1,4 +1,3 @@
-// src/hooks/useAuth.ts
 import { useState, useEffect, useCallback } from 'react';
 import { authApi } from '../api/auth';
 import type { User, LoginRequest, AuthTokens } from '../types';

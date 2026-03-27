@@ -23,10 +23,8 @@ class Message(Base):
     
     chat: Mapped["Chat"] = relationship("Chat", back_populates="messages")
 
-    # 🔹 Property для извлечения источников из metadata_
     @property
     def sources(self) -> List[str]:
-        """Извлекает список источников из поля metadata_"""
         if not self.metadata_:
             return []
         sources = self.metadata_.get("sources")
@@ -34,10 +32,8 @@ class Message(Base):
             return sources
         return []
 
-    # 🔹 Setter для удобного сохранения источников
     @sources.setter
     def sources(self, value: List[str]):
-        """Сохраняет список источников в поле metadata_"""
         if self.metadata_ is None:
             self.metadata_ = {}
         self.metadata_["sources"] = value

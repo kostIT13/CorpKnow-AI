@@ -54,7 +54,6 @@ export default function ChatSidebar({ currentChatId, onSelectChat, onNewChat }: 
 
   return (
     <aside className="w-64 bg-gray-900 text-white flex flex-col h-full">
-      {/* Кнопка новый чат */}
       <div className="p-4 border-b border-gray-800">
         <button
           onClick={onNewChat}
@@ -67,7 +66,6 @@ export default function ChatSidebar({ currentChatId, onSelectChat, onNewChat }: 
         </button>
       </div>
 
-      {/* Список чатов */}
       <div className="flex-1 overflow-y-auto p-2 space-y-1">
         {loading ? (
           <div className="text-center py-4 text-gray-400 text-sm">Загрузка...</div>

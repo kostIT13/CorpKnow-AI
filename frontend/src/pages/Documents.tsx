@@ -1,4 +1,3 @@
-// src/pages/Documents.tsx
 import { Layout } from '../components/Layout';
 import DocumentList from '../components/Documents/DocumentList';
 

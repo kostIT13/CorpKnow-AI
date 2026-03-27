@@ -1,4 +1,3 @@
-// src/pages/Login.tsx
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -19,24 +18,20 @@ export default function Login() {
       await login({ email, password });
       navigate('/dashboard', { replace: true });
     } catch (error: any) {
-      // Ошибка уже обработана в useAuth
     } finally {
       setLoading(false);
-    }  // ✅ Закрывает try-catch-finally
-  };  // ✅ Закрывает функцию handleSubmit
+    } 
+  };  
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
-        {/* Заголовок */}
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">CorpKnow AI</h1>
           <p className="mt-2 text-gray-600">Войдите в свой аккаунт</p>
         </div>
 
-        {/* Форма */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
@@ -52,7 +47,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Пароль
@@ -68,7 +62,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Кнопка */}
           <button
             type="submit"
             disabled={loading}
@@ -88,7 +81,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Ссылка на регистрацию */}
         <div className="text-center mt-4">
           <p className="text-sm text-gray-600">
             Нет аккаунта?{' '}

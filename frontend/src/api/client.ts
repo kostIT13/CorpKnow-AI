@@ -1,20 +1,16 @@
-// src/api/client.ts
 import axios, { AxiosError } from 'axios';
 import type { InternalAxiosRequestConfig, AxiosResponse } from 'axios';
 
-// 🔹 Базовый URL API
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000';
 
-// 🔹 Создаём Axios инстанс
 export const api = axios.create({
   baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
-  timeout: 60000, // 60 секунд для RAG запросов
+  timeout: 60000,
 });
 
-// 🔹 Добавляем токен к каждому запросу
 api.interceptors.request.use(
   (config: InternalAxiosRequestConfig) => {
     const token = localStorage.getItem('token');
@@ -26,7 +22,6 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// 🔹 Обрабатываем 401 (токен истёк)
 api.interceptors.response.use(
   (response: AxiosResponse) => response,
   (error: AxiosError) => {

@@ -1,4 +1,3 @@
-// src/components/Documents/DocumentItem.tsx
 import { useDocuments } from '../../hooks';
 import type { Document } from '../../types';
 
@@ -6,7 +5,6 @@ interface DocumentItemProps {
   doc: Document;
 }
 
-// 🔹 Форматирование статуса
 function getStatusBadge(status: Document['status']) {
   const styles = {
     pending: 'bg-yellow-100 text-yellow-800',
@@ -29,7 +27,6 @@ function getStatusBadge(status: Document['status']) {
   );
 }
 
-// 🔹 Форматирование размера файла
 function formatFileSize(bytes: number): string {
   if (bytes === 0) return '0 Б';
   const k = 1024;
@@ -48,9 +45,7 @@ export default function DocumentItem({ doc }: DocumentItemProps) {
   return (
     <div className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition">
       <div className="flex items-start justify-between gap-4">
-        {/* Иконка + инфо */}
         <div className="flex items-start gap-3 min-w-0">
-          {/* Иконка типа файла */}
           <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center shrink-0">
             <span className="text-lg">
               {doc.file_type.includes('pdf') ? '📄' : 
@@ -58,7 +53,6 @@ export default function DocumentItem({ doc }: DocumentItemProps) {
             </span>
           </div>
           
-          {/* Текст */}
           <div className="min-w-0">
             <h4 className="font-medium text-gray-900 truncate">{doc.filename}</h4>
             <p className="text-sm text-gray-500">
@@ -72,7 +66,6 @@ export default function DocumentItem({ doc }: DocumentItemProps) {
           </div>
         </div>
         
-        {/* Статус + действия */}
         <div className="flex items-center gap-2 shrink-0">
           {getStatusBadge(doc.status)}
           
@@ -90,7 +83,6 @@ export default function DocumentItem({ doc }: DocumentItemProps) {
         </div>
       </div>
       
-      {/* Сообщение об ошибке */}
       {doc.status === 'failed' && doc.error_message && (
         <p className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded">
           ⚠️ {doc.error_message}

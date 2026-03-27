@@ -1,8 +1,7 @@
-// src/components/Layout/Sidebar.tsx
 import { NavLink } from 'react-router-dom';
 
 const navigation = [
-  { name: 'Чат', href: '/chat', icon: '💬' },  // ✅ ИСПРАВЛЕНО: '/chat' вместо '/'
+  { name: 'Чат', href: '/chat', icon: '💬' },
   { name: 'Документы', href: '/documents', icon: '📁' },
 ];
 

@@ -1,4 +1,3 @@
-// src/pages/Chat.tsx
 import { Layout } from '../components/Layout';
 import { ChatWindow } from '../components/Chat';
 

@@ -1,4 +1,3 @@
-// src/App.tsx
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import { useAuth } from './hooks';

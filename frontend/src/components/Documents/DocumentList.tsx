@@ -1,4 +1,3 @@
-// src/components/Documents/DocumentList.tsx
 import UploadDropzone from './UploadDropzone';
 import DocumentItem from './DocumentItem';
 import { useDocuments } from '../../hooks';
@@ -19,7 +18,6 @@ export default function DocumentList() {
 
   return (
     <div className="space-y-6">
-      {/* Заголовок */}
       <div>
         <h2 className="text-xl font-semibold text-gray-900">📁 Ваши документы</h2>
         <p className="text-sm text-gray-500 mt-1">
@@ -27,10 +25,8 @@ export default function DocumentList() {
         </p>
       </div>
 
-      {/* Загрузка файла */}
       <UploadDropzone onUploadSuccess={handleUploadSuccess} />
 
-      {/* Список */}
       {documents.length === 0 ? (
         <div className="text-center py-12 bg-gray-50 rounded-lg">
           <p className="text-gray-500">Нет загруженных документов</p>

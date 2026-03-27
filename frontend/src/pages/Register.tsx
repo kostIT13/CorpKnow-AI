@@ -1,4 +1,3 @@
-// src/pages/Register.tsx
 import { useState } from 'react';
 import type { FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -15,7 +14,6 @@ export default function Register() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    // 🔹 Валидация
     if (password !== confirmPassword) {
       toast.error('Пароли не совпадают');
       return;
@@ -29,12 +27,10 @@ export default function Register() {
     setLoading(true);
 
     try {
-      // 🔹 Отправляем запрос на регистрацию
       await authApi.register({ email, password });
       
       toast.success('✅ Регистрация успешна! Теперь войдите');
       
-      // 🔹 Редирект на логин
       navigate('/login');
     } catch (error: any) {
       const message = error.response?.data?.detail || 'Ошибка при регистрации';
@@ -47,7 +43,6 @@ export default function Register() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-lg shadow-md">
-        {/* Заголовок */}
         <div className="text-center">
           <div className="w-12 h-12 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-4">
             <span className="text-white font-bold text-xl">AI</span>
@@ -56,9 +51,7 @@ export default function Register() {
           <p className="mt-2 text-gray-600">Создайте аккаунт CorpKnow AI</p>
         </div>
 
-        {/* Форма */}
         <form onSubmit={handleSubmit} className="mt-8 space-y-6">
-          {/* Email */}
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
               Email
@@ -74,7 +67,6 @@ export default function Register() {
             />
           </div>
 
-          {/* Password */}
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-gray-700">
               Пароль
@@ -90,7 +82,6 @@ export default function Register() {
             />
           </div>
 
-          {/* Confirm Password */}
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
               Подтвердите пароль
@@ -106,7 +97,6 @@ export default function Register() {
             />
           </div>
 
-          {/* Кнопка */}
           <button
             type="submit"
             disabled={loading}
@@ -126,7 +116,6 @@ export default function Register() {
           </button>
         </form>
 
-        {/* Ссылка на логин */}
         <div className="text-center">
           <p className="text-sm text-gray-600">
             Уже есть аккаунт?{' '}

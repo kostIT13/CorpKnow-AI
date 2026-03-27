@@ -1,4 +1,3 @@
-# src/services/rag/rag_service.py
 from src.services.rag.chroma_client import chroma_client
 from src.services.rag.embedding_service import embedding_service
 from src.services.rag.document_processor import document_processor
@@ -102,23 +101,21 @@ class RAGService:
     self,
     query: str,
     user_id: str,
-    top_k: int = 20  # 🔹 Увеличили с 5 до 20
+    top_k: int = 20  
     ) -> List[dict]:
     
         try:
-            logger.info(f"🔍 ПОИСК: запрос='{query[:50]}...', user_id={user_id}, top_k={top_k}")
+            logger.info(f"ПОИСК: запрос='{query[:50]}...', user_id={user_id}, top_k={top_k}")
         
             query_embedding = self.embeddings.embed_text(query)
             collection = self.chroma.get_or_create_collection(user_id)
         
-        # 🔹 Берём больше кандидатов для разнообразия
             results = collection.query(
             query_embeddings=[query_embedding],
-                n_results=top_k * 2,  # 🔹 40 кандидатов
+                n_results=top_k * 2,  
                 include=["documents", "metadatas", "distances"]
             )
         
-        # 🔹 Дедупликация: не более 3 чанков из одного документа
             seen_docs = {}
             deduplicated = []
         
@@ -128,9 +125,8 @@ class RAGService:
                     distance = results["distances"][0][i] if results.get("distances") else None
                     filename = metadata.get("filename", "Unknown")
                 
-                # 🔹 Ограничиваем чанки из одного файла
                     doc_count = seen_docs.get(filename, 0)
-                    if doc_count < 3:  # 🔹 Макс 3 чанка из одного документа
+                    if doc_count < 3: 
                         seen_docs[filename] = doc_count + 1
                         deduplicated.append({
                             "content": doc_content,
@@ -138,19 +134,17 @@ class RAGService:
                             "score": 1 - distance if distance is not None else 0.0
                         })
                 
-                # 🔹 Хватает top_k
                     if len(deduplicated) >= top_k:
                         break
         
-        # 🔹 Логирование результатов
             filenames = [c["metadata"].get("filename") for c in deduplicated if c["metadata"].get("filename")]
             unique_files = list(set(filenames))
-            logger.info(f"📚 ПОИСК: '{query[:30]}...' → чанки из: {unique_files} (всего {len(deduplicated)})")
+            logger.info(f"ПОИСК: '{query[:30]}...' → чанки из: {unique_files} (всего {len(deduplicated)})")
         
             return deduplicated
             
         except Exception as e:
-            logger.error(f"❌ Ошибка поиска: {type(e).__name__}: {e}", exc_info=True)
+            logger.error(f"Ошибка поиска: {type(e).__name__}: {e}", exc_info=True)
             return []
         
     async def generate_answer(
