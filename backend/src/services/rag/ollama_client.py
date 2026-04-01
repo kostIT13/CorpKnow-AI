@@ -11,7 +11,16 @@ class OllamaClient:
         self.llm_model = settings.OLLAMA_LLM_MODEL
         
         try:
-            self.client = ollama.Client(host=settings.OLLAMA_HOST)
+            # Подготовка заголовков для авторизации
+            headers = {}
+            if settings.OLLAMA_TOKEN:
+                headers["Authorization"] = f"Bearer {settings.OLLAMA_TOKEN}"
+            
+            # Инициализация клиента с заголовками
+            self.client = ollama.Client(
+                host=settings.OLLAMA_HOST,
+                headers=headers if headers else None
+            )
             
             models = self.client.list()
             model_names = [m.model for m in models.models] if hasattr(models, 'models') else []

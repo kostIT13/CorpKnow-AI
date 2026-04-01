@@ -12,6 +12,7 @@ class Settings(BaseSettings):
     OLLAMA_HOST: str = "http://ollama:11434"
     OLLAMA_EMBEDDING_MODEL: str = "nomic-embed-text"
     OLLAMA_LLM_MODEL: str = "llama3.2:3b"
+    OLLAMA_TOKEN: str = "7LAxUKXNzRZCKzGyT1974GTM6DSXzf9Huou_lsSjdmM"
 
     OPENAI_API_KEY: str | None = None
     PROJECT_NAME: str = "CorpKnow AI"
