@@ -47,6 +47,14 @@ class ChromaClient:
             logger.error(f"Ошибка создания коллекции ChromaDB: {e}")
             raise
     
+    def get_or_create_collection(self, name: str = None, **kwargs):
+        """Получить или создать коллекцию"""
+        collection_name = name or self.collection_name
+        return self.client.get_or_create_collection(
+            name=collection_name,
+            **kwargs
+        )
+
     def add_documents(self, ids: list[str], embeddings: list[list[float]], 
                       documents: list[str], metadatas: list[dict] = None):
         """Добавление документов в коллекцию"""
