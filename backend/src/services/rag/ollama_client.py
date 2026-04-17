@@ -11,7 +11,6 @@ class OllamaClient:
         self.llm_model = settings.OLLAMA_LLM_MODEL
         
         try:
-            # Подготовка заголовков для авторизации
             headers = {}
             if settings.OLLAMA_TOKEN:
                 headers["Authorization"] = f"Bearer {settings.OLLAMA_TOKEN}"

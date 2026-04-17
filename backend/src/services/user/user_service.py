@@ -37,6 +37,7 @@ class UserService:
         user = await self.repository.create({
             "id": str(uuid.uuid4()),
             "email": data['email'],
+            "username": data['username'],
             "hashed_password": hashed_password
         })
         return user
